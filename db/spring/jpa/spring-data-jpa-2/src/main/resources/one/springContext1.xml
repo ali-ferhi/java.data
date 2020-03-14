@@ -1,0 +1,51 @@
+<beans:beans
+	xmlns:beans = "http://www.springframework.org/schema/beans" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation = 
+   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+   http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+   
+   <context:component-scan base-package="one" />   
+   <tx:annotation-driven/>
+   <mvc:annotation-driven />
+   <jpa:repositories base-package="one"/>
+   
+   <beans:bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<beans:property name="entityManagerFactory" ref="entityManagerFactory"/>
+		<beans:property name="jpaDialect">
+        	<beans:bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+      	</beans:property>
+  </beans:bean>
+  
+  <beans:bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <beans:property name="dataSource" ref="dataSource1"/>
+    <beans:property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+   <beans:property name="jpaProperties">
+      <beans:props>
+        <beans:prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</beans:prop>
+        <beans:prop key="hibernate.default_schema">schema1</beans:prop>
+      </beans:props>
+    </beans:property>
+    <!-- entities -->
+    <beans:property name="packagesToScan" value="one"/>
+  </beans:bean>
+  
+  <jee:jndi-lookup id="dataSource1" jndi-name="java:jboss/datasource/postgresql/database1" expected-type="javax.sql.DataSource" />
+  
+  <beans:bean id="dataSource2" class="org.springframework.jndi.JndiObjectFactoryBean">
+  	<beans:property name="jndiName" value="java:jboss/datasource/postgresql/database1"/>
+    <!-- <beans:property name="jndiName" value="java:comp/env/jdbc/DatabaseName"/> -->
+  </beans:bean>
+  
+  <beans:bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+</beans:beans>
